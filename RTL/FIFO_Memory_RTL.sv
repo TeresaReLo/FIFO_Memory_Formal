@@ -1,46 +1,50 @@
-module fifo_buff(datain,clk,en,rst,rd,wr,dataout,empty,full);
-  input clk,en,rst,rd,wr;
-  input[31:0]datain;
-  output empty,full;
-  output reg [31:0]dataout;
-  reg [2:0]count=0;
-  reg [31:0]fifo[7:0];
-  reg [2:0] rdcnt=0,wrcnt=0;
-  assign empty=(count==0)?1'b1:1'b0;
-  assign full=(count==8)?1'b1:1'b0;
-  always@(posedge clk)begin
-    
-    if(en==0);
-    else
-      begin
-        if(rst)begin
-          rdcnt=0;
-          wrcnt=0;
-        end
-        else if (rd==1'b1 && count!=0)begin
-          dataout=fifo[rdcnt];
-          rdcnt=rdcnt+1;
-        end
-        else if(wr==1'b1 &&  count<8)begin
-          fifo[wrcnt]=datain;
-          wrcnt=wrcnt+1;
-        end
-        
-        else;
-      end
-    
-    if(wrcnt==8)
-      wrcnt=0;
-    else if(rdcnt==8)
-      rdcnt=0;
-    else;
-    
-    if(rdcnt > wrcnt)
-      count=rdcnt-wrcnt;
-    else if(wrcnt > rdcnt)
-      count=wrcnt-rdcnt;
-    
-    else;
-    
+module fifo #(
+  parameter  DataWidth = 32,
+  parameter  Depth     = 8,
+  parameter PtrWidth  = $clog2(Depth)
+) (
+  input  logic                 clk,
+  input  logic                 rst,
+  input  logic                 writeEn,
+  input  logic [DataWidth-1:0] writeData,
+  input  logic                 readEn,
+  output logic [DataWidth-1:0] readData,
+  output logic                 full,
+  output logic                 empty
+);
+
+  logic [DataWidth-1:0] mem[Depth];
+  logic [PtrWidth:0] wrPtr, wrPtrNext;
+  logic [PtrWidth:0] rdPtr, rdPtrNext;
+
+  always_comb begin
+    wrPtrNext = wrPtr;
+    rdPtrNext = rdPtr;
+    if (writeEn) begin
+      wrPtrNext = wrPtr + 1;
+    end
+    if (readEn) begin
+      rdPtrNext = rdPtr + 1;
+    end
   end
+
+  always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+      wrPtr <= '0;
+      rdPtr <= '0;
+    end else begin
+      wrPtr <= wrPtrNext;
+      rdPtr <= rdPtrNext;
+    end
+
+    mem[wrPtr[PtrWidth-1:0]] <= writeData;
+  end
+
+  assign readData = mem[rdPtr[PtrWidth-1:0]];
+
+  assign empty = (wrPtr[PtrWidth] == rdPtr[PtrWidth]) && (wrPtr[PtrWidth-1:0] == rdPtr[PtrWidth-1:0]);
+  assign full  = (wrPtr[PtrWidth] != rdPtr[PtrWidth]) && (wrPtr[PtrWidth-1:0] == rdPtr[PtrWidth-1:0]);
+
+ 
 endmodule
+
