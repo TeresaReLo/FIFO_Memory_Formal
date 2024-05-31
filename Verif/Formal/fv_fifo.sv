@@ -24,8 +24,12 @@ module fv_fifo#(
     	bit [PtrWidth-1:0] tb_rd_ptr_ndc; //No Deterministic Constant    
  
     	// Assumptions
-    	// Assume the FIFO is initially empty after reset
-    	// FIFO_initial_empty: assert property(@(posedge clk)((rst ==1) |-> (empty == 1)));  
+
+    	// Assume write enable is not active when rst = 1
+  	writeEnOff_rstOn: assume property(@(posedge clk)((rst) |-> (!writeEn))); 
+     	// Assume write enable is not active when rst = 1
+	readEnOff_rstOn: assume property(@(posedge clk)((rst) |-> (!readEn))); 
+
 
     	// Assertions
    
