@@ -1,7 +1,7 @@
 module fv_fifo#(
   	parameter  DataWidth = 32,
   	parameter  Depth     = 8,
-  	parameter PtrWidth  = $clog2(Depth)
+  parameter PtrWidth  = $clog2(Depth) 
 )(
 	input  logic                 clk,
   	input  logic                 rst,
@@ -17,17 +17,32 @@ module fv_fifo#(
   	logic [PtrWidth:0] wrPtr, wrPtrNext,
   	logic [PtrWidth:0] rdPtr, rdPtrNext
 
-);  
-  
+);
 
     bit [PtrWidth-1:0] tb_wr_ptr_ndc; //No Deterministic Constant    
     bit [PtrWidth-1:0] tb_rd_ptr_ndc; //No Deterministic Constant    
+   	bit flag;
+  
+       
+  always @(posedge clk) begin
+      if (rst == 1'b1)
+        flag = 1'b0;
+      else 
+        flag =1'b1;
+  	end
 /////// Assumptionss//////////////////////
   
   	// 1)  Assume write enable is not active when rst = 1
-  	writeEnOff_rst_on: assume property(@(posedge clk)((rst) |-> (!writeEn))); 
-   	// 2) Assume write enable is not active when rst = 1
-	readEnOff_rst_on: assume property(@(posedge clk)((rst) |-> (!readEn))); 
+  	writeEnOff_rst_on: assume property(@(posedge clk)((!flag) |-> (!writeEn))); 
+   	
+    // 2) Assume write enable is not active when rst = 1
+    readEnOff_rst_on: assume property(@(posedge clk)((!flag) |-> (!readEn))); 
+ 	
+   	// 3) Assume read enable is not active when empty is active
+    readEnoff_empty: assume property(@(posedge clk)((empty) |-> (!readEn))); 
+   	
+    // 4) Assume write enable is not active when full is active
+  	writEnoff_full: assume property(@(posedge clk)((full) |-> (!writeEn))); 
 
 /////// Assertions //////////////////////
    
@@ -64,12 +79,12 @@ module fv_fifo#(
         else $error(" Asserion fail rdEn_OFF_rdPtr_stable");
 
    	// 9) After reset the read and write pointers must have the same value and be 0
-     rst_rdPtr_wrPtr_zero:assert property (@(posedge clk) (rst==1'b1 |-> (rdPtr == '0 && wrPtr == '0))) $info("After reset the read and write pointers have the same value and be 0");
+      rst_rdPtr_wrPtr_zero:assert property (@(posedge clk) ($rose(flag) |-> (rdPtr == '0 && wrPtr == '0))) $info("After reset the read and write pointers have the same value and be 0");
       else $error(" Asserion fail"); 
        
- 	// 10) After reset is active read enable is off until a write operation happens.
-   	rst_readEnOff_until_writeEn_on:assert property (@(posedge clk) ($fell(rst) |-> (!readEn throughout (rst or (writeEn && !full)) ))) $info("After reset is active read enable is off until a write operation happen");
-	else $error(" Asserion fail");   
+ 	/* 10) After reset is active read enable is off until a write operation happens.
+   	rst_readEnOff_until_writeEn_on:assert property (@(posedge clk) ($fell(rst) |-> (!readEn throughout ((writeEn && !full)) ))) $info("After reset is active read enable is off until a write operation happen");
+	else $error(" Asserion fail");    NOTA: VA PARA DOCUMENTACION*/
       
   	// 11) The full and empty flags can never be active at the same time 
     never_full_and_empty : assert property (@(posedge clk) disable iff(rst) ((1'b1) |-> (!(full && empty)))) $info("Full and Empty are not active at the same time");
@@ -92,11 +107,11 @@ module fv_fifo#(
         else $error(" Asserion fail rdPtr_maxvalue_reset0"); 
 
    	// 16) Empty signal active after reset
-    empty_on_whenreset: assert property (@(posedge clk) (rst) |-> empty == 1'b1) $info("Empty signal active when reset");
+      empty_on_whenreset: assert property (@(posedge clk) ($rose(flag)) |-> empty == 1'b1) $info("Empty signal active when reset");
         else $error(" Asserion fail empty_ON_whenreset"); 
 
    	// 17) Full signal off after reset
-    full_off_whenreset: assert property (@(posedge clk) (rst) |-> full == 1'b0) $info("Full signal off when reset");
+    full_off_whenreset: assert property (@(posedge clk) ($rose(flag)) |-> full == 1'b0) $info("Full signal off when reset");
         else $error(" Asserion fail empty_ON_whenreset"); 
       
   	// 18)This property verifies writeData was writen correctly when the writeEn is activated
@@ -104,12 +119,15 @@ module fv_fifo#(
         
    	// 19) This property verifies readData was read correctly when readEn is activated
       read_correctly: assert property (@(posedge clk) disable iff (rst)(readEn && !full)|->((mem[rdPtr[PtrWidth-1:0]]) == readData)) $info("readData was read correctly when the readEn is activated"); else $error(" Asserion fail"); 
+        
+  	// 20) The property assures that FIFO memory value is stable if writeEn is not active
+   	fifo_stable_when_writeEnoff: assert property (@(posedge clk) disable iff (rst)(!writeEn)|->($stable(mem[wrPtr[PtrWidth-1:0]]))) $info("FIFO memory value is stable when writeEn is not active"); else $error(" Asserion fail"); 
           
 /////// Cover properties//////////////////////
         
  	// 1) Cover that the FIFO becomes full
     fifo_full:cover property (@(posedge clk)(full));  
-  
+      
    	// 2) Cover that the FIFO becomes empty
    	fifo_empty:cover property (@(posedge clk)(empty));
   
@@ -139,8 +157,12 @@ module fv_fifo#(
   
   	// 11) Read and write at the same time while the memory is empty.
     write_and_read_mem_empty : cover property (@(posedge clk) (empty) |-> (readEn && writeEn));
-       
+      
+    	// 12) Cover a sequence when FIFO becomes full and then no full
+      fifo_full_no_full:cover property (@(posedge clk)(full == 1'b1)##[0:$](full == 1'b0));  
   
+ 	// 13) Cover a sequence when FIFO becomes empty and then no empty
+        fifo_empty_no_empty:cover property (@(posedge clk)(empty == 1'b1)##[0:$](empty == 1'b0)##[0:$] (empty == 1'b1));
 endmodule
 
 
