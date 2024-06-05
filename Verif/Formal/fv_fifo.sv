@@ -91,19 +91,19 @@ module fv_fifo#(
         else $error(" Asserion fail Full and Empty are active at the same time");
 
   	// 12) When wrPtrNext reaches max value wraps around to 0
-    wrPtrNext_maxvalue_reset0 : assert property (@(posedge clk) disable iff (rst)  (writeEn && (!full) && ($past(wrPtrNext == (Depth - 1'b1)))) |-> wrPtrNext == '0) $info("The write pointer next return to zero");
+    wrPtrNext_maxvalue_reset0 : assert property (@(posedge clk) disable iff (rst)  (writeEn && (!full) && ($past(wrPtrNext[PtrWidth-1:0] == (Depth - 1'b1)))) |-> wrPtrNext[PtrWidth-1:0] == '0) $info("The write pointer next return to zero");
         else $error(" Asserion fail wrPtrNext_maxvalue_reset0");
       
   	// 13) When rdPtrNext reaches max value wraps around to 0
-    rdPtrNext_maxvalue_reset0 : assert property (@(posedge clk) disable iff (rst) (readEn && (!empty) && ($past(rdPtrNext == (Depth - 1'b1)))) |-> rdPtrNext == '0) $info("The read pointer next return to zero");
+    rdPtrNext_maxvalue_reset0 : assert property (@(posedge clk) disable iff (rst) (readEn && (!empty) && ($past(rdPtrNext[PtrWidth-1:0] == (Depth - 1'b1)))) |-> rdPtrNext[PtrWidth-1:0] == '0) $info("The read pointer next return to zero");
         else $error(" Asserion fail rdPtrNext_maxvalue_reset0"); 
     
 	// 14) When wrPtr reaches max value wraps around to 0    
-    wrPtr_maxvalue_reset0: assert property (@(posedge clk) disable iff (rst) (writeEn && (!full) && (wrPtr == (Depth - 1'b1))) |=> wrPtr == '0) $info("The write pointer return to zero");
+    wrPtr_maxvalue_reset0: assert property (@(posedge clk) disable iff (rst) (writeEn && (!full) && (wrPtr[PtrWidth-1:0] == (Depth - 1'b1))) |=> wrPtr[PtrWidth-1:0] == '0) $info("The write pointer return to zero");
         else $error(" Asserion fail wrPtr_maxvalue_reset0");
       
    	// 15) When rdPtr reaches max value wraps around to 0    
-    rdPtr_maxvalue_reset0: assert property (@(posedge clk) disable iff (rst) (readEn && (!empty) && (rdPtr == (Depth - 1'b1))) |=> rdPtr == '0) $info("The read pointer return to zero");
+    rdPtr_maxvalue_reset0: assert property (@(posedge clk) disable iff (rst) (readEn && (!empty) && (rdPtr[PtrWidth-1:0] == (Depth - 1'b1))) |=> rdPtr[PtrWidth-1:0] == '0) $info("The read pointer return to zero");
         else $error(" Asserion fail rdPtr_maxvalue_reset0"); 
 
    	// 16) Empty signal active after reset
