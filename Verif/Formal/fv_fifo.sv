@@ -138,7 +138,7 @@ module fv_fifo#(
 	fifo_notEmpty:cover property (@(posedge clk) (readEn && !empty));
      
    	// 5) All the memory was written
-    write_all_address: cover property (@(posedge clk) (writeEn) |-> (rdPtr == tb_wr_ptr_ndc));
+    write_all_address: cover property (@(posedge clk) (writeEn) |-> (wrdPtr == tb_wr_ptr_ndc));
     
    	// 6) All the memory was read
     read_all_address : cover property (@(posedge clk) (readEn) |-> (rdPtr == tb_rd_ptr_ndc));
