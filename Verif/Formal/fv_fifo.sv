@@ -137,7 +137,7 @@ module fv_fifo#(
   	// 4) Cover that the read enable signal is asserted when the FIFO is not empty
 	fifo_notEmpty:cover property (@(posedge clk) (readEn && !empty));
      
-   	// 5) All the memory was read
+   	// 5) All the memory was written
     write_all_address: cover property (@(posedge clk) (writeEn) |-> (rdPtr == tb_wr_ptr_ndc));
     
    	// 6) All the memory was read
