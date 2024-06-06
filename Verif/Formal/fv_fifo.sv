@@ -74,7 +74,7 @@ module fv_fifo#(
     wr_en_off_wr_ptr_stable : assert property (@(posedge clk) disable iff(rst) ((!writeEn) |=> $stable(wrPtr))) $info("The write pointer is stable.");
         else $error(" Asserion fail wrEn_OFF_wrPtr_stable"); 
 
- 	// 8) The property assures that rdPtrNext is stable if a read doesn't occur.
+ 	// 8) The property assures that rdPtr is stable if a read doesn't occur.
     rd_en_off_rd_ptr_stable : assert property (@(posedge clk) disable iff(rst) ((!readEn) |=> $stable(rdPtr))) $info("The read pointer is stable.");
         else $error(" Asserion fail rdEn_OFF_rdPtr_stable");
 
@@ -114,7 +114,7 @@ module fv_fifo#(
     full_off_whenreset: assert property (@(posedge clk) ($rose(flag)) |-> full == 1'b0) $info("Full signal off when reset");
         else $error(" Asserion fail empty_ON_whenreset"); 
       
-  	// 18)This property verifies writeData was writen correctly when the writeEn is activated
+  	// 18)This property verifies writeData was written correctly when the writeEn is activated
       write_correctly: assert property (@(posedge clk) disable iff (rst)(writeEn && !full)|->((mem[wrPtr[PtrWidth-1:0]]) == writeData)) $info("writeData was writen correctly when the writeEn is activated"); else $error(" Asserion fail"); 
         
    	// 19) This property verifies readData was read correctly when readEn is activated
