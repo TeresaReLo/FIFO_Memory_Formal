@@ -20,10 +20,10 @@ module fifo #(
   always_comb begin
     wrPtrNext = wrPtr;
     rdPtrNext = rdPtr;
-    if (writeEn) begin
+    if (writeEn && (!full)) begin
       wrPtrNext = wrPtr + 1;
     end
-    if (readEn) begin
+    if (readEn && (!empty)) begin
       rdPtrNext = rdPtr + 1;
     end
   end
@@ -36,11 +36,14 @@ module fifo #(
       wrPtr <= wrPtrNext;
       rdPtr <= rdPtrNext;
     end
-
-    mem[wrPtr[PtrWidth-1:0]] <= writeData;
+    
+    if (writeEn && !full) mem[wrPtr[PtrWidth-1:0]] <= writeData;
   end
-
-  assign readData = mem[rdPtr[PtrWidth-1:0]];
+  
+  always_comb begin
+        if(readEn && (!empty)) readData = (mem[rdPtr[PtrWidth-1:0]]);
+            else readData =(readData);
+  end
 
   assign empty = (wrPtr[PtrWidth] == rdPtr[PtrWidth]) && (wrPtr[PtrWidth-1:0] == rdPtr[PtrWidth-1:0]);
   assign full  = (wrPtr[PtrWidth] != rdPtr[PtrWidth]) && (wrPtr[PtrWidth-1:0] == rdPtr[PtrWidth-1:0]);
