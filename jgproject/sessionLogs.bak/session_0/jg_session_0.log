@@ -1,0 +1,66 @@
+# ----------------------------------------
+# Jasper Version Info
+# tool      : Jasper 2023.09
+# platform  : Linux 4.19.0-20-amd64
+# version   : 2023.09 FCS 64 bits
+# build date: 2023.09.27 19:40:18 UTC
+# ----------------------------------------
+# started   : 2024-06-10 20:53:42 UTC
+# hostname  : joc047.(none)
+# pid       : 35692
+# arguments : '-label' 'session_0' '-console' '//127.0.0.1:40265' '-style' 'windows' '-data' 'AAAA6HichY69CsJAEIS/Q+x9En8OBA0pJKAgKMEUtiISIRCJiFjY6KP6JpdxJUErB2Zmhx3YdUD8CCFg6NwlPVasyZhLU7ZySBjjmTBkxkjaN3qmpl4p+tswuNfHiR3fcJvnj0O3KbYV0eufnAsFRwYsqDSf2FNaWoopO+3O3HT3ykGbN2ojFBmt' '-proj' '/home/joc/Documents/FIFO_Memory_Formal/jgproject/sessionLogs/session_0' '-init' '-hidden' '/home/joc/Documents/FIFO_Memory_Formal/jgproject/.tmp/.initCmds.tcl' 'Verif/Formal/FIFO_fpv.tcl'
+
+Any disclosure about the Cadence Design Systems software or its use
+model to any third party violates the written Non-Disclosure Agreement
+between Cadence Design Systems, Inc. and the customer.
+
+THIS SOFTWARE CONTAINS CONFIDENTIAL INFORMATION AND TRADE SECRETS OF
+CADENCE DESIGN SYSTEMS, INC. USE, DISCLOSURE, OR REPRODUCTION IS
+PROHIBITED WITHOUT THE PRIOR EXPRESS WRITTEN PERMISSION OF CADENCE
+DESIGN SYSTEMS, INC.
+
+Copyright (C) 2000-2023 Cadence Design Systems, Inc. All Rights
+Reserved.  Unpublished -- rights reserved under the copyright laws of
+the United States.
+
+This product includes software developed by others and redistributed
+according to license agreement. See doc/third_party_readme.txt for
+further details.
+
+RESTRICTED RIGHTS LEGEND
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) (1) (ii) of the Rights in
+Technical Data and Computer Software clause at DFARS 252.227-7013 or
+subparagraphs (c) (1) and (2) of Commercial Computer Software -- Restricted
+Rights at 48 CFR 52.227-19, as applicable.
+
+
+                          Cadence Design Systems, Inc.
+                          2655 Seely Avenue
+                          San Jose, CA 95134
+                          Phone: 408.943.1234
+
+For technical assistance visit http://support.cadence.com.
+
+Jasper Apps Analysis Session - /home/joc/Documents/FIFO_Memory_Formal/jgproject/sessionLogs/session_0
+
+WARNING (WG017): [session]: The system's locale is "ANSI_X3.4-1968", which is not UTF-8. Non-ASCII characters might not be handled correctly.
+WARNING (WG017): [jg_console]: The system's locale is "ANSI_X3.4-1968", which is not UTF-8. Non-ASCII characters might not be handled correctly.
+INFO: successfully checked out licenses "jasper_interactive" and "jasper_fao".
+INFO: reading configuration file "/home/joc/.config/cadence/jasper.conf".
+% clear -all
+INFO (IPF121): Cleared environment completely for new design analysis.
+% set design_top fifo
+fifo
+% #lista de archivos que queremos compilar (RTL)
+% analyze -sv -f rtl_verif.flist 
+ERROR (ESW046): The file "rtl_verif.flist" does not exist.
+
+ERROR: problem encountered at line 4 in file Verif/Formal/FIFO_fpv.tcl
+
+INFO (IPL005): Received request to exit from the console.
+INFO (IPL014): Waiting for the Tcl-thread to exit.
+INFO (IPL018): The peak resident set memory use for this session was 0.344 GB.
+INFO (IPL015): The Tcl-thread exited with status 0.
+INFO (IPL016): Exiting the analysis session with status 0.

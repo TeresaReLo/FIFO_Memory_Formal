@@ -1,6 +1,6 @@
 module fifo #(
-  parameter  DataWidth = 32,
-  parameter  Depth     = 8,
+  parameter  DataWidth = 64,
+  parameter  Depth     = 256,
   parameter PtrWidth  = $clog2(Depth)
 ) (
   input  logic                 clk,
