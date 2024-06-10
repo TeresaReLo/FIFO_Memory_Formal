@@ -37,10 +37,16 @@ module fifo #(
       rdPtr <= rdPtrNext;
     end
     
-    if (writeEn && !full) mem[wrPtr[PtrWidth-1:0]] <= writeData;
   end
   
-  always_comb begin
+  always_ff @(posedge clk or posedge rst) begin
+ 	if(rst) begin
+			mem[wrPtr[PtrWidth-1:0]] <= mem[wrPtr[PtrWidth-1:0]];
+	end else begin  
+    	if (writeEn && !full) mem[wrPtr[PtrWidth-1:0]] <= writeData;
+		end
+	end
+	always_comb begin
         if(readEn && (!empty)) readData = (mem[rdPtr[PtrWidth-1:0]]);
             else readData =(readData);
   end
