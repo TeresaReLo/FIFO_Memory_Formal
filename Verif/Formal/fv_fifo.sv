@@ -116,13 +116,13 @@ module fv_fifo#(
        	else $error(" Asserion fail empty_ON_whenreset"); 
       
   	// 18)This property verifies writeData was written correctly when the writeEn is activated
-      	write_correctly: assert property (@(posedge clk) disable iff (rst)(writeEn && (!full))|->((mem[wrPtr[PtrWidth-1:0]]) == writeData)) $info("writeData was writen correctly when the writeEn is activated"); else $error(" Asserion fail"); 
+      	write_correctly: assert property (@(posedge clk) disable iff (rst)(writeEn && (!full))|=>((mem[$past(wrPtr[PtrWidth-1:0])]) == $past(writeData))) $info("writeData was writen correctly when the writeEn is activated"); else $error(" Asserion fail"); 
         
    	// 19) This property verifies readData was read correctly when readEn is activated
         read_correctly: assert property (@(posedge clk) disable iff (rst)(readEn && (!full))|->((mem[rdPtr[PtrWidth-1:0]]) == readData)) $info("readData was read correctly when the readEn is activated"); else $error(" Asserion fail"); 
         
   	// 20) The property assures that FIFO memory value is stable if writeEn is not active
-   	fifo_stable_when_writeEnoff: assert property (@(posedge clk) disable iff (rst)(!writeEn)|->($stable(mem[wrPtr[PtrWidth-1:0]]))) $info("FIFO memory value is stable when writeEn is not active"); else $error(" Asserion fail"); 
+   	fifo_stable_when_writeEnoff: assert property (@(posedge clk) disable iff (rst)(flag && (!writeEn))|->($stable(mem[wrPtr[PtrWidth-1:0]]))) $info("FIFO memory value is stable when writeEn is not active"); else $error(" Asserion fail"); 
           
 /////// Cover properties//////////////////////
         
