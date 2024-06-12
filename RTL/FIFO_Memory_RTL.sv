@@ -20,10 +20,10 @@ module fifo #(
   	always_comb begin
     		wrPtrNext = wrPtr;
     		rdPtrNext = rdPtr;
-    		if (writeEn) begin
+		if (writeEn && (!full)) begin
       			wrPtrNext = wrPtr + 1;
     		end
-    		if (readEn) begin
+		if (readEn && (!empty)) begin
       			rdPtrNext = rdPtr + 1;
     		end
   	end
