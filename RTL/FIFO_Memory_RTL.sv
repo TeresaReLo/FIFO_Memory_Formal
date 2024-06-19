@@ -1,58 +1,58 @@
 module fifo #(
-  	parameter  DataWidth = 32,
-  	parameter  Depth     = 8,
-  	parameter PtrWidth  = $clog2(Depth)
+  	parameter  DATA_WIDTH = 32,
+  	parameter  DEPTH     = 8,
+  	parameter PTR_WIDTH  = $clog2(DEPTH)
 ) (
-  	input  logic                 clk,
-  	input  logic                 rst,
-  	input  logic                 writeEn,
-  	input  logic [DataWidth-1:0] writeData,
-  	input  logic                 readEn,
-  	output logic [DataWidth-1:0] readData,
-  	output logic                 full,
-  	output logic                 empty
+  	input  logic                  clk,
+  	input  logic                  rst,
+  	input  logic                  write_en,
+  	input  logic [DATA_WIDTH-1:0] write_data,
+  	input  logic                  read_en,
+  	output logic [DATA_WIDTH-1:0] read_data,
+  	output logic                  full,
+  	output logic                  empty
 );
 
-  	logic [DataWidth-1:0] mem[Depth];
-  	logic [PtrWidth:0] wrPtr, wrPtrNext;
-  	logic [PtrWidth:0] rdPtr, rdPtrNext;
+  	logic [DATA_WIDTH-1:0] mem[DEPTH];
+  	logic [PTR_WIDTH:0] wr_ptr, wr_ptr_next;
+  	logic [PTR_WIDTH:0] rd_ptr, rd_ptr_next;
 
   	always_comb begin
-    		wrPtrNext = wrPtr;
-    		rdPtrNext = rdPtr;
-		if (writeEn && (!full)) begin
-      			wrPtrNext = wrPtr + 1;
+    		wr_ptr_next = wr_ptr;
+    		rd_ptr_next = rd_ptr;
+		if (write_en && (!full)) begin
+      			wr_ptr_next = wr_ptr + 1;
     		end
-		if (readEn && (!empty)) begin
-      			rdPtrNext = rdPtr + 1;
+		if (read_en && (!empty)) begin
+      			rd_ptr_next = rd_ptr + 1;
     		end
   	end
 
 	always_ff @(posedge clk or posedge rst) begin
     		if (rst) begin
-      			wrPtr <= '0;
-      			rdPtr <= '0;
+      			wr_ptr <= '0;
+      			rd_ptr <= '0;
     		end else begin
-      			wrPtr <= wrPtrNext;
-      			rdPtr <= rdPtrNext;
+      			wr_ptr <= wr_ptr_next;
+      			rd_ptr <= rd_ptr_next;
     		end
   	end
   
   	always_ff @(posedge clk or posedge rst) begin
  		if(rst) begin
-			mem[wrPtr[PtrWidth-1:0]] <= mem[wrPtr[PtrWidth-1:0]];
+			mem[wr_ptr[PTR_WIDTH-1:0]] <= mem[wr_ptr[PTR_WIDTH-1:0]];
 		end else begin  
-    			if (writeEn && !full) mem[wrPtr[PtrWidth-1:0]] <= writeData;
+    			if (write_en && !full) mem[wr_ptr[PTR_WIDTH-1:0]] <= write_data;
 		end
 	end
 
 	always_comb begin
-        	if(readEn && (!empty)) readData = (mem[rdPtr[PtrWidth-1:0]]);
-            	else readData =(readData);
+        	if(read_en && (!empty)) read_data = (mem[rd_ptr[PTR_WIDTH-1:0]]);
+            	else read_data =(read_data);
   	end
 
-  	assign empty = (wrPtr[PtrWidth] == rdPtr[PtrWidth]) && (wrPtr[PtrWidth-1:0] == rdPtr[PtrWidth-1:0]);
-  	assign full  = (wrPtr[PtrWidth] != rdPtr[PtrWidth]) && (wrPtr[PtrWidth-1:0] == rdPtr[PtrWidth-1:0]);
+  	assign empty = (wr_ptr[PTR_WIDTH] == rd_ptr[PTR_WIDTH]) && (wr_ptr[PTR_WIDTH-1:0] == rd_ptr[PTR_WIDTH-1:0]);
+  	assign full  = (wr_ptr[PTR_WIDTH] != rd_ptr[PTR_WIDTH]) && (wr_ptr[PTR_WIDTH-1:0] == rd_ptr[PTR_WIDTH-1:0]);
 
  
 endmodule
