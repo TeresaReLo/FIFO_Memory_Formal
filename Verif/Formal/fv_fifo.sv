@@ -122,8 +122,8 @@ module fv_fifo#(
         read_correctly: assert property (@(posedge clk) disable iff (rst)(readEn && (!full))|->((mem[rdPtr[PtrWidth-1:0]]) == readData)) $info("readData was read correctly when the readEn is activated"); else $error(" Asserion fail"); 
         
   	// 20) The property assures that FIFO memory value is stable if writeEn is not active
-   	fifo_stable_when_writeEnoff: assert property (@(posedge clk) disable iff (rst)(flag && (!writeEn))|->($stable(mem[wrPtr[PtrWidth-1:0]]))) $info("FIFO memory value is stable when writeEn is not active"); else $error(" Asserion fail"); 
-          
+	fifo_stable_when_writeEnoff: assert property (@(posedge clk) disable iff (rst)(flag && (!writeEn))|=>($stable(mem[wrPtr[PtrWidth-1:0]]))) $info("FIFO memory value is stable when writeEn is not active"); else $error(" Asserion fail");    	
+
 /////// Cover properties//////////////////////
         
  	// 1) Cover that the FIFO becomes full
